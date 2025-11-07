@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stress Level Detection</title>
+
+  <!-- Modern system + Google font for a cleaner look -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* --------------------------
+       Palette & global settings
+       -------------------------- */
+    :root{
+      --bg-1: linear-gradient(135deg,#eef2ff 0%, #fffaf0 50%, #f0fff6 100%);
+      --card-bg: rgba(255,255,255,0.8);
+      --glass: rgba(255,255,255,0.6);
+      --muted: #7b7f86;
+      --text: #0f1724;
+      --accent-1: #6c5ce7; /* purple */
+      --accent-2: #00c2a8; /* teal */
+      --accent-3: #ff7aa2; /* coral */
+      --border: rgba(15,23,36,0.06);
+      --success: #16a34a;
+      --radius: 14px;
+      --max-w: 640px;
+      --input-height: 48px;
+      --glass-blur: 10px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg-1);
+      color: var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.35;
+    }
+
+    /* --------------------------
+       Container & card
+       -------------------------- */
+    .wrap{
+      width:100%;
+      max-width:var(--max-w);
+      padding:28px;
+    }
+
+    .card{
+      background: var(--card-bg);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: 0 8px 30px rgba(13,18,30,0.08);
+      padding:28px;
+      backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--border);
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:20px;
+    }
+
+    /* header */
+    .header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+    }
+
+    .logo{
+      width:56px;height:56px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+      box-shadow: 0 6px 18px rgba(108,92,231,0.18), inset 0 -6px 20px rgba(255,255,255,0.06);
+    }
+
+    .logo svg{filter: drop-shadow(0 3px 8px rgba(108,92,231,0.12));}
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .title h1{
+      font-size:1.125rem;
+      font-weight:700;
+      letter-spacing: -0.01em;
+      color:var(--text);
+    }
+    .title p{
+      font-size:0.9rem;
+      color:var(--muted);
+    }
+
+    /* form */
+    form{
+      display:grid;
+      gap:14px;
+      margin-top:4px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    .form-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    label{
+      font-weight:600;
+      font-size:0.875rem;
+      color:var(--text);
+    }
+
+    .help-text{
+      font-size:0.78rem;
+      color:var(--muted);
+      margin-top:-4px;
+    }
+
+    input[type="number"]{
+      height:var(--input-height);
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(250,250,250,0.7));
+      font-size:0.98rem;
+      color:var(--text);
+      transition: box-shadow .18s ease, transform .05s ease, border-color .15s ease;
+      -webkit-appearance: none;
+      outline: none;
+    }
+
+    input[type="number"]::placeholder { color: #bfc4ca; }
+
+    input[type="number"]:focus{
+      border-color: rgba(108,92,231,0.9);
+      box-shadow: 0 6px 18px rgba(108,92,231,0.08);
+      transform: translateY(-1px);
+    }
+
+    hr.sep{
+      border: none;
+      height:1px;
+      background: linear-gradient(90deg, rgba(108,92,231,0.06), rgba(0,0,0,0.04));
+      margin:4px 0 12px 0;
+      border-radius:2px;
+    }
+
+    /* submit button - colorful minimal */
+    .actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:6px;
+    }
+
+    .btn{
+      height:48px;
+      padding:0 20px;
+      border-radius:12px;
+      border:none;
+      font-weight:700;
+      font-size:0.95rem;
+      cursor:pointer;
+      color:white;
+      display:inline-grid;
+      place-items:center;
+      gap:10px;
+      transition: transform .08s ease, box-shadow .12s ease;
+    }
+
+    .btn-primary{
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-3));
+      box-shadow: 0 8px 22px rgba(108,92,231,0.12);
+    }
+    .btn-primary:active{ transform: translateY(1px) scale(.997); }
+    .btn-ghost{
+      background: transparent;
+      color:var(--muted);
+      border-radius:10px;
+      padding:8px 12px;
+      font-weight:600;
+    }
+
+    /* result */
+    .result{
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:14px;
+      border-radius:12px;
+      background: linear-gradient(180deg, rgba(250,250,255,0.85), rgba(255,255,255,0.6));
+      border:1px solid var(--border);
+      align-items:center;
+    }
+
+    .result h2{
+      font-size:0.92rem;
+      color:var(--muted);
+      margin-bottom:2px;
+      font-weight:600;
+    }
+
+    .prediction{
+      font-weight:700;
+      font-size:1.25rem;
+      color:var(--text);
+      padding:6px 12px;
+      border-radius:10px;
+      background: linear-gradient(90deg, rgba(108,92,231,0.06), rgba(0,194,168,0.03));
+      border: 1px dashed rgba(15,23,36,0.04);
+    }
+
+    /* small responsive tweaks */
+    @media (max-width:640px){
+      .grid-2{ grid-template-columns: 1fr;}
+      .header{gap:12px}
+      .logo{width:48px;height:48px}
+    }
+
+    /* subtle helper for accessible focus */
+    :focus{ outline: 3px solid rgba(108,92,231,0.12); outline-offset:2px; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- header -->
+      <div class="header">
+        <div class="logo" aria-hidden="true">
+          <!-- tiny heart + waveform icon -->
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 21s-7-4.35-9.5-7.25C.5 10.5 3 6 7 6c2.5 0 3.5 2.5 5 2.5s2.5-2.5 5-2.5c4 0 6.5 4.5 4.5 7.75C19 16.65 12 21 12 21z" fill="white" opacity="0.18"/>
+            <path d="M6.8 11.2L8.6 8.2l1.6 3.8 1.8-5.6 1.2 3.6L15.8 7l1.8 4.8" stroke="white" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+          </svg>
+        </div>
+
+        <div class="title">
+          <h1>Stress Level Detection</h1>
+          <p>Minimal · colorful · quick insights from HRV metrics</p>
+        </div>
+      </div>
+
+      <!-- form -->
+      <form action="/" method="POST" novalidate>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="MEAN_RR">Average Time Between Heartbeats (MEAN_RR)</label>
+            <div class="help-text">Time in milliseconds (ms). See 'HRV' in your health app.</div>
+            <input type="number" id="MEAN_RR" name="MEAN_RR" placeholder="e.g. 800" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label for="RMSSD">Short-Term Variability (RMSSD)</label>
+            <div class="help-text">Variation between consecutive beats (ms).</div>
+            <input type="number" id="RMSSD" name="RMSSD" placeholder="e.g. 37" step="any" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="pNN25">Beat-to-Beat Variation (pNN25)</label>
+            <div class="help-text">% of beats differing by >25ms</div>
+            <input type="number" id="pNN25" name="pNN25" placeholder="e.g. 12" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label for="pNN50">Long-Term Beat Variation (pNN50)</label>
+            <div class="help-text">% of beats differing by >50ms</div>
+            <input type="number" id="pNN50" name="pNN50" placeholder="e.g. 6" step="any" required>
+          </div>
+        </div>
+
+        <hr class="sep">
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="LF">Low-Frequency Signals (LF)</label>
+            <div class="help-text">Power (ms²) — relates to sympathetic activity.</div>
+            <input type="number" id="LF" name="LF" placeholder="e.g. 320" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label for="HF">High-Frequency Signals (HF)</label>
+            <div class="help-text">Power (ms²) — reflects parasympathetic activity.</div>
+            <input type="number" id="HF" name="HF" placeholder="e.g. 210" step="any" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="LF_HF">Stress Balance Ratio (LF/HF)</label>
+          <div class="help-text">Ratio of LF to HF (e.g., 1.5).</div>
+          <input type="number" id="LF_HF" name="LF_HF" placeholder="e.g. 1.5" step="any" required>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" title="Analyze">
+            Analyze Stress Level
+          </button>
+
+          <!-- small lightweight reset/clear (optional) -->
+          <button type="button" onclick="this.closest('form').reset()" class="btn btn-ghost" title="Clear form">
+            Clear
+          </button>
+        </div>
+      </form>
+
+      <!-- server-side result (Jinja kept) -->
+      {% if cond %}
+      <div class="result" role="status" aria-live="polite">
+        <h2>Predicted Condition</h2>
+        <div class="prediction">{{cond}}</div>
+        <div style="font-size:0.82rem;color:var(--muted);margin-top:4px">
+          Tip: For clearer readings, measure after 5 minutes rest and avoid caffeine.
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</body>
+</html>
